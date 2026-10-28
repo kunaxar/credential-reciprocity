@@ -106,16 +106,16 @@ final Map<String, Map<String, Verdict>> matrix = {
   'osha30': {
     'tx': const Verdict(
       Status.works,
-      'Your card is valid here',
-      'It is a federal OSHA card, so it is valid in every state. It has no expiry date. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept.',
-      ['Keep your card or training certificate handy', 'If a job asks for more, check with the employer'],
+      'Valid proof. Acceptance is up to the employer or site',
+      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked Texas rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
     'fl': const Verdict(
       Status.works,
-      'Your card is valid here',
-      'It is a federal OSHA card, so it is valid in every state. It has no expiry date. Some employers set their own rules on top.',
-      ['Keep your card or training certificate handy', 'If a job asks for more, check with the employer'],
+      'Valid proof. Acceptance is up to the employer or site',
+      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked Florida rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
     'nyc': const Verdict(
@@ -131,9 +131,9 @@ final Map<String, Map<String, Verdict>> matrix = {
     ),
     'ca': const Verdict(
       Status.works,
-      'Your card is valid here',
-      'It is a federal OSHA card, so it is valid in every state. It has no expiry date. Some employers set their own rules on top.',
-      ['Keep your card or training certificate handy', 'If a job asks for more, check with the employer'],
+      'Valid proof. Acceptance is up to the employer or site',
+      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked California rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
   },
@@ -141,8 +141,8 @@ final Map<String, Map<String, Verdict>> matrix = {
     for (final p in places)
       p.id: Verdict(
         Status.works,
-        'Accepted as proof of training',
-        'NCCER credentials are portable and can be checked online. They show what training you finished. They are not a state license, and each employer decides how much weight to give them.',
+        'Valid proof of training. Employer decides',
+        'NCCER credentials are portable and can be checked online. They show what training you finished. They are not a state license. We have not checked any state rule or employer, and each employer decides how much weight to give them.',
         [
           'Share your NCCER record with the employer',
           if (p.id == 'nyc') 'NYC sites may also need an SST card' else 'If the job needs a license, that is a separate check',
@@ -198,12 +198,12 @@ const jobs = <Job>[
       'Plant maintenance and controls work.', [
     Req('NCCER Core', ['nccer']),
     Req('Forklift operator evaluation', ['forklift']),
-    Req('OSHA 10 or OSHA 30', ['osha30']),
+    Req('OSHA 10 or OSHA 30', ['osha30'], employerNote: 'Employer lists OSHA 10 or 30'),
   ]),
   Job('j3', 'Residential Electrician', 'Sunrise Homes Electric (fictional)', 'Tampa, FL', 'fl', '\$28 - \$36 / hr',
       'New builds. Crew of 4.', [
     Req('Electrician license for the county', ['okjm']),
-    Req('OSHA 10 or OSHA 30', ['osha30']),
+    Req('OSHA 10 or OSHA 30', ['osha30'], employerNote: 'Employer lists OSHA 10 or 30'),
     Req('First Aid / CPR', ['cpr']),
   ]),
   Job('j4', 'Commercial Electrician', 'Five Boroughs Build (fictional)', 'Brooklyn, NY', 'nyc', '\$45 - \$58 / hr',
