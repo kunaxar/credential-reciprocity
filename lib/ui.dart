@@ -78,7 +78,7 @@ Widget sectionTitle(String t, {String? sub}) => Padding(
 
 Widget demoBanner() => Container(
       width: double.infinity, color: g100, padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      child: const Text('Prototype - fictional worker, jobs and postings. Nothing is sent.', style: TextStyle(color: g600, fontSize: 12), textAlign: TextAlign.center),
+      child: const Text('Prototype - fictional worker. Nothing is sent.', style: TextStyle(color: g600, fontSize: 12), textAlign: TextAlign.center),
     );
 
 const red = Color(0xFFB42318);
