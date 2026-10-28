@@ -35850,7 +35850,7 @@ $S:244}
 A.lc.prototype={
 al(){return new A.HJ()}}
 A.HJ.prototype={
-O(a){var s,r,q,p=null,o=this.a.c,n=t.E,m=A.d([new A.cY(B.Ap,A.ro(A.d([new A.p9(o.d,B.bB,B.cS,p,p),B.vR,A.ev(o.b,B.KI),B.vQ,A.ev(o.c+" \xb7 "+o.e,B.jc),B.J2,A.ev(o.f,B.Lb)],n),B.ar,B.aL),p),B.A_,A.ak2("Where can I use this?",'Tap a place. "Valid proof" means the credential is real, not that every employer accepts it. "Not confirmed" means we do not know.')],n)
+O(a){var s,r,q,p=null,o=this.a.c,n=t.E,m=A.d([new A.cY(B.Ap,A.ro(A.d([new A.p9(o.d,B.bB,B.cS,p,p),B.vR,A.ev(o.b,B.KI),B.vQ,A.ev(o.c+" \xb7 "+o.e,B.jc),B.J2,A.ev(o.f,B.Lb)],n),B.ar,B.aL),p),B.A_,A.ak2("Where can I use this?",'Tap a place. "Valid proof" means the credential proves the training or exam it claims. It does not mean a state or employer accepts it. "Not confirmed" means we do not know.')],n)
 for(s=0;s<4;++s)m.push(this.ZE(o,B.d6[s]))
 r=A.aeA(B.el,1)
 q=A.i3(14)
