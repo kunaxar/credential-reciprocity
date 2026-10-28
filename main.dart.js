@@ -40674,7 +40674,7 @@ e=A.anx(f)
 d=A.eo(10)
 c=A.r3(A.anT(f),A.mS(f),a,16)
 b=k.c!=null?"Demo match":"Needs"
-B.b.P(o,A.c([B.ld,A.f4(A.eP(A.c([c,B.z_,A.wP(A.bE(b+": "+k.a+". You hold "+h.a.b+": "+g.b.toLowerCase()+".",a,a,a,A.ew(a,a,A.mS(f),a,a,a,a,a,a,a,a,13,a,a,B.bp,a,1.35,!0,a,a,a,a,a,a,a,a),a,a))],q),B.av,B.T,B.ac,0),B.w,a,new A.d1(e,a,a,d,a,a,B.aC),a,a,B.Ee,1/0)],q))}else{g=A.c([],q)
+B.b.P(o,A.c([B.ld,A.f4(A.eP(A.c([c,B.z_,A.wP(A.bE(b+": "+k.a+". You hold "+h.a.b+": "+g.b+".",a,a,a,A.ew(a,a,A.mS(f),a,a,a,a,a,a,a,a,13,a,a,B.bp,a,1.35,!0,a,a,a,a,a,a,a,a),a,a))],q),B.av,B.T,B.ac,0),B.w,a,new A.d1(e,a,a,d,a,a,B.aC),a,a,B.Ee,1/0)],q))}else{g=A.c([],q)
 if(n>0)g.push(new A.jf(""+n+" valid proof",B.mt,B.mU,B.nN,a))
 if(m>0)g.push(new A.jf(""+m+" need extra steps",B.mL,B.ms,B.nL,a))
 if(l>0)g.push(new A.jf(""+l+" not confirmed or no",B.b8,B.cx,B.k5,a))
