@@ -32,47 +32,16 @@ Verdict verdictFor(String credId, String placeId) => matrix[credId]![placeId]!;
 Future<void> openUrl(String u) async => launchUrl(Uri.parse(u), mode: LaunchMode.externalApplication);
 
 // ---------- shell ----------
-class Shell extends StatefulWidget {
+class Shell extends StatelessWidget {
   const Shell({super.key});
-  @override
-  State<Shell> createState() => _ShellState();
-}
-
-class _ShellState extends State<Shell> {
-  int tab = 0;
-  String? filterCred;
-  final search = TextEditingController();
-
-  void showJobsFor(String credId) {
-    setState(() {
-      tab = 1;
-      filterCred = credId;
-      search.clear();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(children: [
           demoBanner(),
-          Expanded(
-            child: tab == 0
-                ? WalletTab(onShowJobs: showJobsFor)
-                : JobsTab(search: search, filterCred: filterCred, onFilter: (v) => setState(() => filterCred = v), onShowJobs: showJobsFor),
-          ),
+          const Expanded(child: WalletTab()),
         ]),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: tab,
-        onDestinationSelected: (i) => setState(() => tab = i),
-        backgroundColor: Colors.white,
-        indicatorColor: g100,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.badge_outlined), selectedIcon: Icon(Icons.badge), label: 'My credentials'),
-          NavigationDestination(icon: Icon(Icons.work_outline), selectedIcon: Icon(Icons.work), label: 'Jobs'),
-        ],
       ),
     );
   }
@@ -80,8 +49,7 @@ class _ShellState extends State<Shell> {
 
 // ---------- wallet ----------
 class WalletTab extends StatelessWidget {
-  final void Function(String) onShowJobs;
-  const WalletTab({super.key, required this.onShowJobs});
+  const WalletTab({super.key});
   @override
   Widget build(BuildContext context) {
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
@@ -91,7 +59,7 @@ class WalletTab extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CredDetail(cred: c, onShowJobs: onShowJobs))),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CredDetail(cred: c))),
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(border: Border.all(color: g200), borderRadius: BorderRadius.circular(16)),
@@ -126,23 +94,16 @@ Widget _placeChip(Place p, Status s) => Container(
       ]),
     );
 
-// ---------- credential detail (entry 1) ----------
+// ---------- credential detail ----------
 class CredDetail extends StatefulWidget {
   final Cred cred;
-  final String? initialPlace;
-  final void Function(String) onShowJobs;
-  const CredDetail({super.key, required this.cred, required this.onShowJobs, this.initialPlace});
+  const CredDetail({super.key, required this.cred});
   @override
   State<CredDetail> createState() => _CredDetailState();
 }
 
 class _CredDetailState extends State<CredDetail> {
   String? open;
-  @override
-  void initState() {
-    super.initState();
-    open = widget.initialPlace;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -167,20 +128,9 @@ class _CredDetailState extends State<CredDetail> {
           sectionTitle('Where can I use this?', sub: 'Tap a place. "Valid proof" means the credential is real, not that every employer accepts it. "Not confirmed" means we do not know.'),
           for (final p in places) _placeRow(c, p),
           _elsewhereRow(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-            child: FilledButton.icon(
-              onPressed: () {
-                widget.onShowJobs(c.id);
-                Navigator.of(context).popUntil((r) => r.isFirst);
-              },
-              icon: const Icon(Icons.work_outline),
-              label: Text('Jobs where this counts'),
-            ),
-          ),
           if (c.id == 'okjm')
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
               child: OutlinedButton(onPressed: () => openUrl('https://www.nccer.org/programs-crafts/reciprocity-map'), child: const Text('NCCER map of state licensing bodies')),
             ),
           const Padding(
@@ -268,238 +218,4 @@ class _CredDetailState extends State<CredDetail> {
           ]),
         ),
       );
-}
-
-// ---------- jobs (entry 2) ----------
-Status? worst(Iterable<Status> ss) {
-  Status? w;
-  for (final s in ss) {
-    if (w == null || s.index > w.index) w = s;
-  }
-  return w;
-}
-
-// Best verdict among your credentials that could meet a requirement.
-({Cred cred, Verdict v})? bestFor(Req r, String placeId) {
-  ({Cred cred, Verdict v})? best;
-  for (final id in r.okIds) {
-    final v = verdictFor(id, placeId);
-    if (best == null || v.status.index < best.v.status.index) best = (cred: credById(id), v: v);
-  }
-  return best;
-}
-
-bool jobMatches(Job j, String q) {
-  if (q.isEmpty) return true;
-  final t = q.toLowerCase();
-  final hay = [j.title, j.company, j.city, ...j.reqs.map((r) => r.label), ...j.reqs.expand((r) => r.okIds.map((i) => credById(i).name))].join(' ').toLowerCase();
-  return t.split(RegExp(r'\s+')).every(hay.contains);
-}
-
-class JobsTab extends StatefulWidget {
-  final TextEditingController search;
-  final String? filterCred;
-  final void Function(String?) onFilter;
-  final void Function(String) onShowJobs;
-  const JobsTab({super.key, required this.search, required this.filterCred, required this.onFilter, required this.onShowJobs});
-  @override
-  State<JobsTab> createState() => _JobsTabState();
-}
-
-class _JobsTabState extends State<JobsTab> {
-  @override
-  Widget build(BuildContext context) {
-    final q = widget.search.text.trim();
-    final fc = widget.filterCred;
-    final list = jobs.where((j) {
-      if (!jobMatches(j, q)) return false;
-      if (fc != null) {
-        final counts = j.reqs.any((r) => r.okIds.contains(fc) && verdictFor(fc, j.placeId).status.index <= Status.steps.index);
-        if (!counts) return false;
-      }
-      return true;
-    }).toList();
-    return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-        child: TextField(
-          controller: widget.search,
-          onChanged: (_) => setState(() {}),
-          decoration: InputDecoration(
-            hintText: 'Search a job or a credential, e.g. OSHA 10',
-            prefixIcon: const Icon(Icons.search),
-            suffixIcon: q.isEmpty ? null : IconButton(icon: const Icon(Icons.close), onPressed: () => setState(widget.search.clear)),
-          ),
-        ),
-      ),
-      SizedBox(
-        height: 46,
-        child: ListView(scrollDirection: Axis.horizontal, padding: const EdgeInsets.symmetric(horizontal: 16), children: [
-          Padding(padding: const EdgeInsets.only(right: 8), child: Pill('All jobs', on: fc == null, onTap: () => widget.onFilter(null))),
-          for (final c in creds)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Pill('My ${c.name.split(' ').take(2).join(' ')}', on: fc == c.id, icon: Icons.badge_outlined, onTap: () => widget.onFilter(fc == c.id ? null : c.id)),
-            ),
-        ]),
-      ),
-      if (fc != null)
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-          child: Text('Showing jobs where your ${credById(fc).name} is valid proof or needs extra steps. Matches are demo matches, not verified acceptance.', style: const TextStyle(color: g600, fontSize: 13)),
-        ),
-      if (list.isEmpty)
-        const Padding(padding: EdgeInsets.all(32), child: Center(child: Text('No jobs match. Try a different word.', style: TextStyle(color: g500)))),
-      for (final j in list) _jobCard(context, j, q),
-    ]);
-  }
-
-  Widget _jobCard(BuildContext context, Job j, String q) {
-    final statuses = [for (final r in j.reqs) bestFor(r, j.placeId)?.v.status ?? Status.notSure];
-    final works = statuses.where((s) => s == Status.works).length;
-    final steps = statuses.where((s) => s == Status.steps).length;
-    final other = statuses.length - works - steps;
-    // If the search matches a requirement, show how your credential counts for that requirement.
-    Req? hit;
-    if (q.isNotEmpty) {
-      final t = q.toLowerCase();
-      for (final r in j.reqs) {
-        final h = ('${r.label} ${r.okIds.map((i) => credById(i).name).join(' ')}').toLowerCase();
-        if (t.split(RegExp(r'\s+')).every(h.contains)) {
-          hit = r;
-          break;
-        }
-      }
-    }
-    final b = hit == null ? null : bestFor(hit, j.placeId);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => JobDetail(job: j))),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(border: Border.all(color: g200), borderRadius: BorderRadius.circular(16)),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(j.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
-            Text('${j.company} · ${j.city}', style: const TextStyle(color: g500, fontSize: 13)),
-            const SizedBox(height: 2),
-            Text(j.pay, style: const TextStyle(fontSize: 13, color: g600)),
-            if (b != null) ...[
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: bgOf(b.v.status), borderRadius: BorderRadius.circular(10)),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Icon(iconOf(b.v.status), size: 16, color: fgOf(b.v.status)),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text('${hit!.employerNote != null ? 'Demo match' : 'Needs'}: ${hit.label}. You hold ${b.cred.name}: ${b.v.headline}.', style: TextStyle(color: fgOf(b.v.status), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
-                ]),
-              ),
-            ] else ...[
-              const SizedBox(height: 10),
-              Wrap(spacing: 6, runSpacing: 6, children: [
-                if (works > 0) Tag('$works valid proof', green, greenBg, icon: Icons.check_circle),
-                if (steps > 0) Tag('$steps need extra steps', amber, amberBg, icon: Icons.alt_route),
-                if (other > 0) Tag('$other not confirmed or no', g600, g100, icon: Icons.help),
-              ]),
-            ],
-          ]),
-        ),
-      ),
-    );
-  }
-}
-
-class JobDetail extends StatelessWidget {
-  final Job job;
-  const JobDetail({super.key, required this.job});
-  @override
-  Widget build(BuildContext context) {
-    final todo = <(String, String)>[];
-    for (final r in job.reqs) {
-      final b = bestFor(r, job.placeId);
-      if (b != null && b.v.status != Status.works) {
-        for (final n in b.v.next) {
-          todo.add((r.label, n));
-        }
-      }
-    }
-    return Scaffold(
-      appBar: AppBar(title: const Text('Job', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600))),
-      body: SafeArea(
-        child: ListView(padding: const EdgeInsets.only(bottom: 32), children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(job.title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 2),
-              Text('${job.company} · ${job.city}', style: const TextStyle(color: g500, fontSize: 13)),
-              const SizedBox(height: 2),
-              Text('${job.pay} · ${job.blurb}', style: const TextStyle(color: g600, fontSize: 13)),
-            ]),
-          ),
-          sectionTitle('Do your credentials count here?', sub: 'In ${placeById(job.placeId).name}. Tap a credential for the full answer.'),
-          for (final r in job.reqs) _reqCard(context, r),
-          if (todo.isNotEmpty) ...[
-            sectionTitle('Before you apply'),
-            for (final t in todo)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Icon(Icons.check_box_outline_blank, size: 18, color: g500),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text.rich(TextSpan(children: [TextSpan(text: t.$2), TextSpan(text: '  (${t.$1})', style: const TextStyle(color: g500, fontSize: 12))]), style: const TextStyle(height: 1.35))),
-                ]),
-              ),
-          ],
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-            child: FilledButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Demo only. Nothing was sent.'))),
-              child: const Text('Apply (demo)'),
-            ),
-          ),
-        ]),
-      ),
-    );
-  }
-
-  Widget _reqCard(BuildContext context, Req r) {
-    final b = bestFor(r, job.placeId);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: b == null
-            ? null
-            : () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => CredDetail(cred: b.cred, initialPlace: job.placeId, onShowJobs: (_) {}))),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(border: Border.all(color: g200), borderRadius: BorderRadius.circular(14)),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Needs: ${r.label}', style: const TextStyle(fontWeight: FontWeight.w700)),
-            if (r.employerNote != null) Text(r.employerNote!, style: const TextStyle(color: g500, fontSize: 12)),
-            const SizedBox(height: 8),
-            if (b == null)
-              const Text('You do not hold this yet.', style: TextStyle(color: g600))
-            else ...[
-              Row(children: [
-                Expanded(child: Text('Your ${b.cred.name}', style: const TextStyle(color: g600, fontSize: 13))),
-                statusTag(b.v.status),
-              ]),
-              const SizedBox(height: 6),
-              if (r.employerNote != null && b.v.status != Status.no && b.v.status != Status.notSure)
-                const Padding(padding: EdgeInsets.only(bottom: 4), child: Text('Demo match: this fictional job lists it as accepted', style: TextStyle(color: slate, fontSize: 12, fontWeight: FontWeight.w600))),
-              Text(b.v.headline, style: TextStyle(color: fgOf(b.v.status), fontWeight: FontWeight.w700)),
-              const SizedBox(height: 2),
-              Text(b.v.why, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: g600, fontSize: 13, height: 1.35)),
-            ],
-          ]),
-        ),
-      ),
-    );
-  }
 }
