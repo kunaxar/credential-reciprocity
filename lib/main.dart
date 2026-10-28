@@ -395,7 +395,7 @@ class _JobsTabState extends State<JobsTab> {
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Icon(iconOf(b.v.status), size: 16, color: fgOf(b.v.status)),
                   const SizedBox(width: 8),
-                  Expanded(child: Text('${hit!.employerNote != null ? 'Demo match' : 'Needs'}: ${hit.label}. You hold ${b.cred.name}: ${b.v.headline.toLowerCase()}.', style: TextStyle(color: fgOf(b.v.status), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
+                  Expanded(child: Text('${hit!.employerNote != null ? 'Demo match' : 'Needs'}: ${hit.label}. You hold ${b.cred.name}: ${b.v.headline}.', style: TextStyle(color: fgOf(b.v.status), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
                 ]),
               ),
             ] else ...[
