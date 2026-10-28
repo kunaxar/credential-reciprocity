@@ -125,7 +125,7 @@ class _CredDetailState extends State<CredDetail> {
             ]),
           ),
           const Divider(height: 24),
-          sectionTitle('Where can I use this?', sub: 'Tap a place. "Valid proof" means the credential is real, not that every employer accepts it. "Not confirmed" means we do not know.'),
+          sectionTitle('Where can I use this?', sub: 'Tap a place. "Valid proof" means the credential proves the training or exam it claims. It does not mean a state or employer accepts it. "Not confirmed" means we do not know.'),
           for (final p in places) _placeRow(c, p),
           _elsewhereRow(),
           if (c.id == 'okjm')
