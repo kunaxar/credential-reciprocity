@@ -24,7 +24,7 @@ class App extends StatelessWidget {
 Color fgOf(Status s) => switch (s) { Status.works => green, Status.steps => amber, Status.notSure => g600, Status.no => red };
 Color bgOf(Status s) => switch (s) { Status.works => greenBg, Status.steps => amberBg, Status.notSure => g100, Status.no => redBg };
 IconData iconOf(Status s) => switch (s) { Status.works => Icons.check_circle, Status.steps => Icons.alt_route, Status.notSure => Icons.help, Status.no => Icons.block };
-String labelOf(Status s) => switch (s) { Status.works => 'Works here', Status.steps => 'Extra steps', Status.notSure => 'Not confirmed', Status.no => 'Won\'t carry over' };
+String labelOf(Status s) => switch (s) { Status.works => 'Valid proof', Status.steps => 'Extra steps', Status.notSure => 'Not confirmed', Status.no => 'Won\'t carry over' };
 Widget statusTag(Status s) => Tag(labelOf(s), fgOf(s), bgOf(s), icon: iconOf(s));
 
 Verdict verdictFor(String credId, String placeId) => matrix[credId]![placeId]!;
@@ -164,7 +164,7 @@ class _CredDetailState extends State<CredDetail> {
             ]),
           ),
           const Divider(height: 24),
-          sectionTitle('Where can I use this?', sub: 'Tap a place. Answers say "not confirmed" when we do not know.'),
+          sectionTitle('Where can I use this?', sub: 'Tap a place. "Valid proof" means the credential is real, not that every employer accepts it. "Not confirmed" means we do not know.'),
           for (final p in places) _placeRow(c, p),
           _elsewhereRow(),
           Padding(
@@ -346,7 +346,7 @@ class _JobsTabState extends State<JobsTab> {
       if (fc != null)
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-          child: Text('Showing jobs where your ${credById(fc).name} works or needs extra steps.', style: const TextStyle(color: g600, fontSize: 13)),
+          child: Text('Showing jobs where your ${credById(fc).name} is valid proof or needs extra steps. Matches are demo matches, not verified acceptance.', style: const TextStyle(color: g600, fontSize: 13)),
         ),
       if (list.isEmpty)
         const Padding(padding: EdgeInsets.all(32), child: Center(child: Text('No jobs match. Try a different word.', style: TextStyle(color: g500)))),
@@ -395,13 +395,13 @@ class _JobsTabState extends State<JobsTab> {
                 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Icon(iconOf(b.v.status), size: 16, color: fgOf(b.v.status)),
                   const SizedBox(width: 8),
-                  Expanded(child: Text('Needs: ${hit!.label}. You hold ${b.cred.name}: ${b.v.headline.toLowerCase()}.', style: TextStyle(color: fgOf(b.v.status), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
+                  Expanded(child: Text('${hit!.employerNote != null ? 'Demo match' : 'Needs'}: ${hit.label}. You hold ${b.cred.name}: ${b.v.headline.toLowerCase()}.', style: TextStyle(color: fgOf(b.v.status), fontSize: 13, height: 1.35, fontWeight: FontWeight.w600))),
                 ]),
               ),
             ] else ...[
               const SizedBox(height: 10),
               Wrap(spacing: 6, runSpacing: 6, children: [
-                if (works > 0) Tag('$works work here', green, greenBg, icon: Icons.check_circle),
+                if (works > 0) Tag('$works valid proof', green, greenBg, icon: Icons.check_circle),
                 if (steps > 0) Tag('$steps need extra steps', amber, amberBg, icon: Icons.alt_route),
                 if (other > 0) Tag('$other not confirmed or no', g600, g100, icon: Icons.help),
               ]),
@@ -491,6 +491,8 @@ class JobDetail extends StatelessWidget {
                 statusTag(b.v.status),
               ]),
               const SizedBox(height: 6),
+              if (r.employerNote != null && b.v.status != Status.no && b.v.status != Status.notSure)
+                const Padding(padding: EdgeInsets.only(bottom: 4), child: Text('Demo match: this fictional job lists it as accepted', style: TextStyle(color: slate, fontSize: 12, fontWeight: FontWeight.w600))),
               Text(b.v.headline, style: TextStyle(color: fgOf(b.v.status), fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text(b.v.why, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(color: g600, fontSize: 13, height: 1.35)),
