@@ -105,16 +105,18 @@ final Map<String, Map<String, Verdict>> matrix = {
   },
   'osha30': {
     'tx': const Verdict(
-      Status.works,
-      'Valid proof. Acceptance is up to the employer or site',
-      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked Texas rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      Status.notSure,
+      'Acceptance not confirmed',
+      'Your card is valid proof of 30 hours of OSHA training and does not expire. OSHA does not require this training; some states, cities and employers do, and they decide what they accept. We have not checked Texas rules or a specific employer.',
+
       ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
     'fl': const Verdict(
-      Status.works,
-      'Valid proof. Acceptance is up to the employer or site',
-      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked Florida rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      Status.notSure,
+      'Acceptance not confirmed',
+      'Your card is valid proof of 30 hours of OSHA training and does not expire. OSHA does not require this training; some states, cities and employers do, and they decide what they accept. We have not checked Florida rules or a specific employer.',
+
       ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
@@ -130,9 +132,10 @@ final Map<String, Map<String, Verdict>> matrix = {
       [_nycSst, _oshaFaq],
     ),
     'ca': const Verdict(
-      Status.works,
-      'Valid proof. Acceptance is up to the employer or site',
-      'OSHA 10/30 cards are federal and do not expire. OSHA does not require this training. Some states, cities and employers do, and they decide what they accept. We have not checked California rules or a specific employer, so a job\'s own listed requirement is what to match.',
+      Status.notSure,
+      'Acceptance not confirmed',
+      'Your card is valid proof of 30 hours of OSHA training and does not expire. OSHA does not require this training; some states, cities and employers do, and they decide what they accept. We have not checked California rules or a specific employer.',
+
       ['Keep your card or training certificate handy', 'Check what the employer lists as accepted'],
       [_oshaFaq],
     ),
@@ -140,9 +143,10 @@ final Map<String, Map<String, Verdict>> matrix = {
   'nccer': {
     for (final p in places)
       p.id: Verdict(
-        Status.works,
-        'Valid proof of training. Employer decides',
-        'NCCER credentials are portable and can be checked online. They show what training you finished. They are not a state license. We have not checked any state rule or employer, and each employer decides how much weight to give them.',
+        Status.notSure,
+        'Acceptance not confirmed',
+        'Your NCCER record is valid proof of the training you finished and can be checked online. It is not a state license. We have not checked any state rule or employer for this place, and each employer decides how much weight to give it.',
+
         [
           'Share your NCCER record with the employer',
           if (p.id == 'nyc') 'NYC sites may also need an SST card' else 'If the job needs a license, that is a separate check',
