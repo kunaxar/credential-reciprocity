@@ -1,0 +1,13 @@
+name: credential_reciprocity
+description: Where can I use this credential? Prototype with a fictional worker.
+publish_to: none
+version: 0.1.0
+environment:
+  sdk: ^3.5.0
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^6.2.1
+  url_launcher: ^6.3.0
+flutter:
+  uses-material-design: true
